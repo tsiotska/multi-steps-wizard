@@ -5,12 +5,15 @@
   "type": "module",
   "description": "Configurable multi steps wizard",
   "author": "Vitalii Tsisaruk<https://github.com/tsiotska>",
-  "main": "dist/main.js",
+  "main": "dist/multi-step-wizard.cjs.js",
+  "module": "dist/multi-step-wizard.es.js",
+  "browser": "dist/multi-step-wizard.umd.js",
   "types": "dist/main.d.ts",
   "scripts": {
-    "dev": "vite",
+    "playground": "vite --config ./playground/vite.config.js",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev": "vite"
   },
   "dependencies": {
     "lucide-vue-next": "^0.95.0",

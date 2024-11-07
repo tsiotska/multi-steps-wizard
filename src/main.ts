@@ -1,5 +1,5 @@
 import { defineCustomElement } from 'vue'
-import MultiStepsProvider from './MultiStepsProvider.vue'
+import MultiStepsProvider from './components/MultiStepsWizard'
 
 const MultiStepsProviderElement = defineCustomElement(MultiStepsProvider)
 

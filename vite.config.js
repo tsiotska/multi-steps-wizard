@@ -1,8 +1,8 @@
-import { fileURLToPath, URL } from 'node:url'
+import {fileURLToPath, URL} from 'node:url'
 
-import { defineConfig } from 'vite'
+import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { libInjectCss } from 'vite-plugin-lib-inject-css'
+import {libInjectCss} from 'vite-plugin-lib-inject-css'
 // import { terser } from 'rollup-plugin-terser'; .min.js
 // import dts from 'vite-plugin-dts'
 
@@ -16,7 +16,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: "src/main.js",
+      entry: "src/main.ts",
       name: 'MultiStepWizard',
       formats: ["es", "cjs", "umd"],
       fileName: format => `multi-step-wizard.${format}.js`
@@ -33,7 +33,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@multi-steps-wizard': fileURLToPath(new URL('./dist', import.meta.url))
     }
   }
 })
