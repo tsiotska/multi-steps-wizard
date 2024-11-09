@@ -6,46 +6,8 @@ export default {
 
 <script setup lang="ts">
 import { twMerge } from "tailwind-merge"
-import { computed, ButtonHTMLAttributes, useAttrs } from "vue"
-
-type Variant =
-  | "primary"
-  | "secondary"
-  | "success"
-  | "warning"
-  | "pending"
-  | "danger"
-  | "dark"
-  | "outline-primary"
-  | "outline-secondary"
-  | "outline-success"
-  | "outline-warning"
-  | "outline-pending"
-  | "outline-danger"
-  | "outline-dark"
-  | "soft-primary"
-  | "soft-secondary"
-  | "soft-success"
-  | "soft-warning"
-  | "soft-pending"
-  | "soft-danger"
-  | "soft-dark"
-  | "facebook"
-  | "twitter"
-  | "instagram"
-  | "linkedin"
-
-type Elevated = boolean
-type Size = "sm" | "lg"
-type Rounded = boolean
-
-interface ButtonProps extends /* @vue-ignore */ ButtonHTMLAttributes {
-  as?: string | object
-  variant?: Variant
-  elevated?: Elevated
-  size?: Size
-  rounded?: Rounded
-}
+import { computed, useAttrs } from "vue"
+import {ButtonProps} from "./";
 
 const { as, size, variant, elevated, rounded } = withDefaults(defineProps<ButtonProps>(), {
   as: "button"

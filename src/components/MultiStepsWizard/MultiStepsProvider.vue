@@ -11,7 +11,7 @@
             :title="prevButtonTooltip"
             :disabled="isPrevButtonDisabled"
         >
-        <!-- <Lucide icon="ArrowLeft" class="w-5 h-5 mr-2"/> -->
+          <!-- <Lucide icon="ArrowLeft" class="w-5 h-5 mr-2"/> -->
           Back
         </Button>
         <div class="hidden md:flex w-full max-w-4xl mr-8">
@@ -26,7 +26,7 @@
             :disabled="isNextButtonDisabled"
         >
           {{ nextStageTitle }}
-        <!-- <Lucide icon="ArrowRight" class="w-5 h-5 ml-2"/> -->
+          <!-- <Lucide icon="ArrowRight" class="w-5 h-5 ml-2"/> -->
         </Button>
       </div>
       <div class="md:hidden mt-5">
@@ -116,39 +116,13 @@ import {ref, computed, watch} from "vue"
 import type {Component} from "vue"
 // import { ErrorObject, Validation } from "@vuelidate/core"
 import {useRouter} from "vue-router"
-
 // import IncludeSvgRadialGradient from "@/assets/svg/radial-gradient.svg"
 import Button from "@/components/Button"
+import type {MultiStepsProviderProps, Stage} from "./";
 // import Alert from "@/base-components/Alert/Alert.vue"
 // import { IApplication } from "@/interfaces/application.interface.ts"
 
-const router = useRouter()
-
-interface MultiStepsProviderProps {
-  stages: Record<string, Stage>
-  entrypointComponent: string
-  returnRouteName: string
-  responseErrorMessages: Array<string>
-  // v$?: Validation
-}
-
-interface Stage {
-  stage: number
-  title: string
-  payload: object
-  component: Component
-  next: string
-  previous: string
-  onNextPageClick: (next: () => void, data?: object) => Promise<unknown>
-  onPrevPageClick: (prev: () => void, data?: object) => Promise<unknown>
-  isPrevButtonDisabled: boolean
-  isNextButtonDisabled: boolean
-  isInvisible: boolean
-  excludeNextStageFromCache: boolean
-  skip: boolean
-  prevButtonTooltip: string
-  hasError: boolean
-}
+// const router = useRouter()
 
 export interface MultiStepsProviderEmits {
   (e: "stageChange", stage: keyof typeof props.stages): void
@@ -192,39 +166,39 @@ const prevButtonTooltip = computed(() => (isPrevButtonDisabled.value ? currentSt
 
 const toPreviousPage = async ({rawNavigation}: { rawNavigation?: boolean } = {}) => {
   const {componentV$, ...data} = currentStageRef.value || {}
-  const isComponentValid = !componentV$ || (await componentV$.value.$validate())
+  // const isComponentValid = !componentV$ || (await componentV$.value.$validate())
   // const isTitleValid = !props.v$ || (await props.v$.$validate())
   // if (isTitleValid && isComponentValid) {
-    // clientErrorMessages.value = []
-    if (rawNavigation) {
-      currentStageName.value = currentStage.value.previous
-    } else {
-      const toPrev = () => (currentStageName.value = currentStage.value.previous)
-      // emits data handler if navigation requires it, here your api call may be implemented
-      await currentStage.value.onPrevPageClick?.(toPrev, data)
-    }
+  // clientErrorMessages.value = []
+  if (rawNavigation) {
+    currentStageName.value = currentStage.value.previous
+  } else {
+    const toPrev = () => (currentStageName.value = currentStage.value.previous)
+    // emits data handler if navigation requires it, here your api call may be implemented
+    await currentStage.value.onPrevPageClick?.(toPrev, data)
+  }
   // } else {
-    // TODO: refactor messages and reinvent way of displaying
-    /*clientErrorMessages.value = componentV$.value.$errors.map(
-      (error: ErrorObject) => error.$propertyPath + ": " + error.$message
-    )*/
+  // TODO: refactor messages and reinvent way of displaying
+  /*clientErrorMessages.value = componentV$.value.$errors.map(
+    (error: ErrorObject) => error.$propertyPath + ": " + error.$message
+  )*/
   // }
 }
 
 // Navigates to next page only if current stage fields are valid
 const toNextPage = async ({rawNavigation}: { rawNavigation?: boolean } = {}) => {
   const {componentV$, ...data} = currentStageRef.value || {}
-  const isComponentValid = !componentV$ || (await componentV$.value.$validate())
-  const isTitleValid = !props.v$ || (await props.v$.$validate())
+  // const isComponentValid = !componentV$ || (await componentV$.value.$validate())
+  // const isTitleValid = !props.v$ || (await props.v$.$validate())
   // if (isTitleValid && isComponentValid) {
-    // clientErrorMessages.value = []
-    if (rawNavigation) {
-      currentStageName.value = currentStage.value.next
-    } else {
-      const toNext = () => (currentStageName.value = currentStage.value.next)
-      // emits data handler if navigation requires it, here your api call may be implemented
-      await currentStage.value.onNextPageClick?.(toNext, data)
-    }
+  // clientErrorMessages.value = []
+  if (rawNavigation) {
+    currentStageName.value = currentStage.value.next
+  } else {
+    const toNext = () => (currentStageName.value = currentStage.value.next)
+    // emits data handler if navigation requires it, here your api call may be implemented
+    await currentStage.value.onNextPageClick?.(toNext, data)
+  }
   /*} else {
     clientErrorMessages.value = componentV$.value.$errors.map(
       (error: ErrorObject) => error.$propertyPath + ": " + error.$message
@@ -237,8 +211,8 @@ const onSaveClick = async () => {
   // const isComponentValid = !componentV$ || (await componentV$.value.$validate())
   // const isTitleValid = !props.v$ || (await props.v$.$validate())
   // if (isTitleValid && isComponentValid) {
-    // clientErrorMessages.value = []
-    emit("saveClick", data)
+  // clientErrorMessages.value = []
+  emit("saveClick", data)
   /*} else {
     clientErrorMessages.value = componentV$.value.$errors.map(
       (error: ErrorObject) => error.$propertyPath + ": " + error.$message
@@ -262,7 +236,8 @@ const isCurrentStage = (stage: number) => {
 }
 
 const onExitClickHandler = () => {
-  router.push({name: props.returnRouteName})
+  // Callback
+  // router.push({name: props.returnRouteName})
 }
 
 watch(currentStage, (nextStage, prevStage) => {

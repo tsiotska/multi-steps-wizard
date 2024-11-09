@@ -1,18 +1,13 @@
 import {fileURLToPath, URL} from 'node:url'
 
-import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
+import {defineConfig} from 'vite'
 import {libInjectCss} from 'vite-plugin-lib-inject-css'
-// import { terser } from 'rollup-plugin-terser'; .min.js
-// import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   plugins: [
     vue(),
-    libInjectCss(),
-    /* dts({
-      insertTypesEntry: true,
-    }), */
+    libInjectCss()
   ],
   build: {
     lib: {
@@ -36,5 +31,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@multi-steps-wizard': fileURLToPath(new URL('./dist', import.meta.url))
     }
+  },
+  optimizeDeps: {
+    exclude: ['playground']
   }
 })
