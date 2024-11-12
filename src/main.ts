@@ -1,12 +1,13 @@
 import { defineCustomElement, App } from 'vue'
-import MultiStepsProvider from './components/MultiStepsWizard'
-import type { MultiStepsProviderProps } from "@/components/MultiStepsWizard";
+import MultiStagesProvider from './components/MultiStagesProvider'
+import type { IMultiStagesProviderProps, IStage } from "@/components/MultiStagesProvider";
+import "./assets/main.css"
 
-const MultiStepsProviderElement = defineCustomElement(MultiStepsProvider)
+const MultiStagesProviderElement = defineCustomElement(MultiStagesProvider)
 
-export { MultiStepsProviderElement, MultiStepsProvider }
+export { MultiStagesProviderElement, MultiStagesProvider }
 
 export function install(app: App) {
-  app.component('MultiStepsProvider', MultiStepsProvider)
+  app.component('MultiStagesProvider', MultiStagesProvider)
 }
-export type { MultiStepsProviderProps }
+export type { IMultiStagesProviderProps, IStage }

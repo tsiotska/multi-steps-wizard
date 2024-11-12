@@ -1,18 +1,19 @@
 import {fileURLToPath, URL} from 'node:url'
-
 import vue from '@vitejs/plugin-vue'
 import {defineConfig} from 'vite'
 import {libInjectCss} from 'vite-plugin-lib-inject-css'
+import svgLoader from "vite-svg-loader"
 
 export default defineConfig({
   plugins: [
     vue(),
-    libInjectCss()
+    libInjectCss(),
+    svgLoader(),
   ],
   build: {
     lib: {
       entry: "src/main.ts",
-      name: 'MultiStepWizard',
+      name: 'MultIStagesWizard',
       formats: ["es", "cjs", "umd"],
       fileName: format => `multi-step-wizard.${format}.js`
     },

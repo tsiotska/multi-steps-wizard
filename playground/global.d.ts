@@ -1,7 +1,7 @@
-import {MultiStepsProviderProps} from "@multi-steps-wizard";
+import {IMultiStagesProviderProps} from "@multi-steps-wizard";
 
 declare module 'vue' {
   export interface GlobalComponents {
-    'multi-steps-wizard': MultiStepsProviderProps;
+    'multi-steps-wizard': IMultiStagesProviderProps;
   }
 }
