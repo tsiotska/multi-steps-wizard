@@ -9,7 +9,7 @@ const toRGB = (value) => {
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./src/**/*.{js,jsx,ts,vue}"],
+  content: ["./playground/**/*.{js,jsx,ts,vue}", "./src/**/*.{js,jsx,ts,vue}"],
   theme: {
     extend: {
       colors: {

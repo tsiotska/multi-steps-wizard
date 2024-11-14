@@ -22,8 +22,8 @@ export interface IStage {
   component: Component
   nextStage: string | null
   prevStage: string | null
-  onNextPageClick?: (next: () => void, data?: object) => Promise<unknown>
-  onPrevPageClick?: (prev: () => void, data?: object) => Promise<unknown>
+  onNextPageClick?: (next: () => void, data?: object) => Promise<unknown> | void
+  onPrevPageClick?: (prev: () => void, data?: object) => Promise<unknown> | void
   isPrevButtonDisabled?: boolean
   isNextButtonDisabled?: boolean
   isInvisible?: boolean

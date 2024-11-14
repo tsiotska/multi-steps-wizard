@@ -1,13 +1,12 @@
 <template>
-  <div>
-    <MultiStagesProvider
-        ref="multiStepsProviderRef"
-        class="mt-8 intro-y"
-        :stages="stagesConfiguration"
-        :entrypointComponent="currentStage"
-    >
-    </MultiStagesProvider>
-  </div>
+  <MultiStagesProvider
+      ref="multiStepsProviderRef"
+      class="mt-6 px-10 intro-y "
+      :stages="stagesConfiguration"
+      :entrypointComponent="currentStage"
+      @saveClick="saveClickHandler"
+  >
+  </MultiStagesProvider>
 </template>
 
 <!--
@@ -17,14 +16,12 @@ returnRouteName="home"
 @saveClick="saveClickHandler"-->
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
-import {MultiStagesProviderElement, MultiStagesProvider, IStage} from '@multi-steps-wizard'
+import {provide, reactive, ref} from "vue";
+import {MultiStagesProvider, IStage} from '@multi-steps-wizard'
 import {Personal, Contact, Employment, Loan} from "./stages"
-
-// To register as framework-agnostic Web component
-if (!customElements.get('multi-stages-wizard')) {
-  customElements.define('multi-stages-wizard', MultiStagesProviderElement)
-}
+import type {IUserLoanData} from "./app.ts";
+import {email, minValue, required} from "@vuelidate/validators";
+import useVuelidate from "@vuelidate/core";
 
 const STAGES = {
   'LOAN_PERSONAL': 'LOAN_PERSONAL',
@@ -35,7 +32,7 @@ const STAGES = {
 
 const currentStage = ref(STAGES.LOAN_PERSONAL)
 
-const userLoanData = reactive({
+const userLoanData = reactive<IUserLoanData>({
   personal: {
     fullName: "",
     age: 0,
@@ -52,25 +49,57 @@ const userLoanData = reactive({
     jobTitle: "",
     annualIncome: "",
   },
-  loadDetails: {
+  loanDetails: {
     loanAmount: "",
     loanPurpose: "",
     loanTerm: ""
   }
 })
 
+/* Validation */
+const rules = {
+  personal: {
+    fullName: { required },
+    age: { required, minValue: minValue(18) },
+    dateOfBirth: { required }
+  },
+  contacts: {
+    email: { required, email },
+    phoneNumber: { required },
+    address: { required }
+  },
+  employment: {
+    employerName: { required },
+    jobTitle: { required },
+    annualIncome: { required }
+  },
+  loanDetails: {
+    loanAmount: { required },
+    loanPurpose: { required },
+    loanTerm: { required }
+  }
+}
+
+const v$ = useVuelidate(rules, userLoanData)
+provide('validator', v$)
+
 const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = {
   [STAGES.LOAN_PERSONAL]: {
     stageOrderKey: 1,
     component: Personal,
     payload: {
-     ...userLoanData.personal
+      ...userLoanData.personal
     },
     skip: userLoanData.personal.skipNextStage,
     title: 'Personal Information',
-    // isValid: () => form.firstName && form.lastName,
     nextStage: STAGES.LOAN_CONTACTS,
-    prevStage: null
+    prevStage: null,
+    onNextPageClick: async (next: () => void, data?: object | undefined) => {
+      if(await v$.value.personal.$validate()) {
+        userLoanData.personal = data as typeof userLoanData.personal
+        next()
+      }
+    }
   },
   [STAGES.LOAN_CONTACTS]: {
     stageOrderKey: 2,
@@ -79,9 +108,12 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = 
     payload: {
       ...userLoanData.contacts
     },
-    // isValid: () => form.address?.trim() !== '',
     nextStage: STAGES.LOAN_EMPLOYMENT,
-    prevStage: STAGES.LOAN_PERSONAL
+    prevStage: STAGES.LOAN_PERSONAL,
+    onNextPageClick: (next: () => void, data?: object | undefined) => {
+      userLoanData.contacts = data as typeof userLoanData.contacts
+      next()
+    }
   },
   [STAGES.LOAN_EMPLOYMENT]: {
     stageOrderKey: 3,
@@ -90,20 +122,33 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = 
     payload: {
       ...userLoanData.employment
     },
-    // isValid: () => form.hasAcceptedTerms === true,
     nextStage: STAGES.LOAN_DETAILS,
-    prevStage: STAGES.LOAN_CONTACTS
+    prevStage: STAGES.LOAN_CONTACTS,
+    onNextPageClick: (next: () => void, data?: object | undefined) => {
+      userLoanData.employment = data as typeof userLoanData.employment
+      next()
+    }
   },
   [STAGES.LOAN_DETAILS]: {
     stageOrderKey: 4,
     title: 'Loan Details',
     component: Loan,
     payload: {
-      ...userLoanData.loadDetails
+      ...userLoanData.loanDetails
     },
-    // isValid: () => form.paymentMethod && ['credit-card', 'paypal'].includes(form.paymentMethod),
     nextStage: null,
-    prevStage: STAGES.LOAN_EMPLOYMENT
+    prevStage: STAGES.LOAN_EMPLOYMENT,
+    onNextPageClick: (next: () => void, data?: object | undefined) => {
+      userLoanData.loanDetails = data as typeof userLoanData.loanDetails
+      next()
+    }
   }
+}
+
+const saveClickHandler = (data: Partial<IUserLoanData>) => {
+  const appPayload = Object.assign(userLoanData, data)
+  console.log("data");
+  console.log(data);
+  // APICall
 }
 </script>

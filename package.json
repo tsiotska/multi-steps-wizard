@@ -1,5 +1,5 @@
 {
-  "name": "multi-steps-wizard",
+  "name": "wizardify",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -20,7 +20,10 @@
     "vite-plugin-lib-inject-css": "^2.1.1",
     "vite-svg-loader": "^5.1.0",
     "vue": "^3.5.12",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.4.5",
+    "@vuelidate/components": "^1.2.6",
+    "@vuelidate/core": "^2.0.3",
+    "@vuelidate/validators": "^2.0.4"
   },
   "devDependencies": {
     "@types/vue": "^2.0.0",

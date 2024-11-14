@@ -151,7 +151,7 @@ const errorMessagesCombined = computed(() => {
 })
 */
 
-// HACK: (KEEP-ALIVE exclusion) Visiting stages, navigating back and forth in certain components may not need to keep next one cached
+// HACK: (KEEP-ALIVE exclusion) Visiting stages, navigating back and forth in certain components may not need to keep one cached
 const shouldClearNextComponentCache = computed(() =>
     currentStage.value.excludeNextStageFromCache && currentStage.value.nextStage ? [currentStage.value.nextStage] : []
 )
@@ -199,11 +199,11 @@ const toNextPage = async ({forceNavigation}: { forceNavigation?: boolean } = {})
     const toNext = () => (currentStageName.value = currentStage.value.nextStage!)
     await currentStage.value.onNextPageClick(toNext, data)
   }
-  /*} else {
+  /* }  else {
     clientErrorMessages.value = componentV$.value.$errors.map(
       (error: ErrorObject) => error.$propertyPath + ": " + error.$message
     )
-  }*/
+  } */
 }
 
 const onSaveClick = async () => {
