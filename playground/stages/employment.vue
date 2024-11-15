@@ -35,9 +35,9 @@
 </template>
 
 <script setup lang="ts">
-import {inject, Ref, ref} from "vue";
-import {Validation} from "@vuelidate/core";
-import type {IUserLoanData} from "../app";
+import {computed, ref} from "vue";
+import useVuelidate from "@vuelidate/core";
+import {required} from "@vuelidate/validators";
 
 interface DetailsProps {
   payload: {
@@ -55,12 +55,22 @@ const props = withDefaults(defineProps<DetailsProps>(), {
   })
 })
 
-const v$ = inject<Validation<Ref<IUserLoanData>>>('validator')?.value?.employment
 
 const state = ref({
   employerName: props.payload.employerName,
   jobTitle: props.payload.jobTitle,
   annualIncome: props.payload.annualIncome
 })
+
+const rules = {
+  employerName: {required},
+  jobTitle: {required},
+  annualIncome: {required}
+}
+
+const v$ = useVuelidate(rules, state)
+const validate = v$.value.$validate
+
+defineExpose({employment: state, validate})
 </script>
 

@@ -9,12 +9,10 @@
 </template>
 
 <script setup lang="ts">
-import {provide, reactive, ref} from "vue";
+import {reactive} from "vue";
 import {BaseMultiStages, IStage} from '@multi-steps-wizard'
 import {Personal, Contact, Employment, Loan} from "./stages"
 import type {IUserLoanData} from "./app.ts";
-import {email, minValue, required} from "@vuelidate/validators";
-import useVuelidate from "@vuelidate/core";
 
 const STAGES = {
   'LOAN_PERSONAL': 'LOAN_PERSONAL',
@@ -61,10 +59,8 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = 
     nextStage: STAGES.LOAN_CONTACTS,
     prevStage: null,
     onNextPageClick: async (next: () => void, data?: object | undefined) => {
-      if(await v$.value.personal.$validate()) {
-        userLoanData.personal = data as typeof userLoanData.personal
-        next()
-      }
+      userLoanData.personal = data as typeof userLoanData.personal
+      next()
     }
   },
   [STAGES.LOAN_CONTACTS]: {
@@ -110,34 +106,6 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = 
     }
   }
 }
-
-/* Validation */
-const rules = {
-  personal: {
-    fullName: { required },
-    age: { required, minValue: minValue(18) },
-    dateOfBirth: { required }
-  },
-  contacts: {
-    email: { required, email },
-    phoneNumber: { required },
-    address: { required }
-  },
-  employment: {
-    employerName: { required },
-    jobTitle: { required },
-    annualIncome: { required }
-  },
-  loanDetails: {
-    loanAmount: { required },
-    loanPurpose: { required },
-    loanTerm: { required }
-  }
-}
-
-const v$ = useVuelidate(rules, userLoanData)
-provide('validator', v$)
-/* --- */
 
 const saveClickHandler = (data: Partial<IUserLoanData>) => {
   const appPayload = Object.assign(userLoanData, data)

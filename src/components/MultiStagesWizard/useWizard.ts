@@ -57,26 +57,38 @@ export function useWizard(stages: Record<string, IStage>, entrypointComponent: s
 
   const toPreviousPage = async ({forceNavigation}: { forceNavigation?: boolean } = {}) => {
     const {...data} = currentStageRef.value || {}
+    const toPrev = () => (currentStageName.value = currentStage.value.prevStage!);
 
+    // Handle forced navigation or when no handler is defined
     if (forceNavigation || !currentStage.value.onPrevPageClick) {
-      currentStageName.value = currentStage.value.prevStage!
-    } else {
-      const toPrev = () => (currentStageName.value = currentStage.value.prevStage!)
-      // Emits data handler if navigation requires it. There your api call may be implemented.
-      await currentStage.value.onPrevPageClick(toPrev, data)
+      toPrev()
+      return
     }
+
+    // Handle custom navigation logic with provided handler
+    await currentStage.value.onPrevPageClick(toPrev, data)
   }
 
   const toNextPage = async ({forceNavigation}: { forceNavigation?: boolean } = {}) => {
-    const {...data} = currentStageRef.value || {}
+    const {validate, ...data} = currentStageRef.value || {}
+    const toNext = () => (currentStageName.value = currentStage.value.nextStage!)
 
-    if (forceNavigation || !currentStage.value.onNextPageClick) {
-      currentStageName.value = currentStage.value.nextStage!
-    } else {
-      const toNext = () => (currentStageName.value = currentStage.value.nextStage!)
-      // Emits data handler if navigation requires it. There your api call may be implemented.
-      await currentStage.value.onNextPageClick(toNext, data)
+    // Handle forced navigation or when no handler is defined
+    if (forceNavigation) {
+      toNext()
+      return
     }
+
+    // If validator is provided and data is valid
+    if (validate && !(await validate())) return
+
+    if (!currentStage.value.onNextPageClick) {
+      toNext()
+      return
+    }
+
+    // Handle custom navigation logic with provided handler
+    await currentStage.value.onNextPageClick(toNext, data)
   }
 
   return {
