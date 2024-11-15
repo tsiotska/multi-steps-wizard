@@ -1,23 +1,16 @@
 <template>
-  <MultiStagesProvider
-      ref="multiStepsProviderRef"
+  <BaseMultiStages
       class="mt-6 px-10 intro-y "
       :stages="stagesConfiguration"
-      :entrypointComponent="currentStage"
+      :entrypointComponent="entrypointComponent"
       @saveClick="saveClickHandler"
   >
-  </MultiStagesProvider>
+  </BaseMultiStages>
 </template>
-
-<!--
-returnRouteName="home"
-:responseErrorMessages="responseErrorMessages"
-:v$="v$"
-@saveClick="saveClickHandler"-->
 
 <script setup lang="ts">
 import {provide, reactive, ref} from "vue";
-import {MultiStagesProvider, IStage} from '@multi-steps-wizard'
+import {BaseMultiStages, IStage} from '@multi-steps-wizard'
 import {Personal, Contact, Employment, Loan} from "./stages"
 import type {IUserLoanData} from "./app.ts";
 import {email, minValue, required} from "@vuelidate/validators";
@@ -30,7 +23,7 @@ const STAGES = {
   'LOAN_DETAILS': 'LOAN_DETAILS',
 } as const
 
-const currentStage = ref(STAGES.LOAN_PERSONAL)
+const entrypointComponent = STAGES.LOAN_PERSONAL
 
 const userLoanData = reactive<IUserLoanData>({
   personal: {
@@ -55,33 +48,6 @@ const userLoanData = reactive<IUserLoanData>({
     loanTerm: ""
   }
 })
-
-/* Validation */
-const rules = {
-  personal: {
-    fullName: { required },
-    age: { required, minValue: minValue(18) },
-    dateOfBirth: { required }
-  },
-  contacts: {
-    email: { required, email },
-    phoneNumber: { required },
-    address: { required }
-  },
-  employment: {
-    employerName: { required },
-    jobTitle: { required },
-    annualIncome: { required }
-  },
-  loanDetails: {
-    loanAmount: { required },
-    loanPurpose: { required },
-    loanTerm: { required }
-  }
-}
-
-const v$ = useVuelidate(rules, userLoanData)
-provide('validator', v$)
 
 const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = {
   [STAGES.LOAN_PERSONAL]: {
@@ -144,6 +110,34 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = 
     }
   }
 }
+
+/* Validation */
+const rules = {
+  personal: {
+    fullName: { required },
+    age: { required, minValue: minValue(18) },
+    dateOfBirth: { required }
+  },
+  contacts: {
+    email: { required, email },
+    phoneNumber: { required },
+    address: { required }
+  },
+  employment: {
+    employerName: { required },
+    jobTitle: { required },
+    annualIncome: { required }
+  },
+  loanDetails: {
+    loanAmount: { required },
+    loanPurpose: { required },
+    loanTerm: { required }
+  }
+}
+
+const v$ = useVuelidate(rules, userLoanData)
+provide('validator', v$)
+/* --- */
 
 const saveClickHandler = (data: Partial<IUserLoanData>) => {
   const appPayload = Object.assign(userLoanData, data)

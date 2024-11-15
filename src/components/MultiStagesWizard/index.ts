@@ -1,18 +1,15 @@
-import MultiStagesProvider from "./MultiStagesProvider.vue"
+import BaseMultiStages from "./BaseMultiStages.vue"
+import {useWizard} from "./useWizard"
 import type {Component} from "vue";
 
 /**
- * MultIStagessProvider component props
- * @typedef {Object} IMultiStagesProviderProps
- * @property {Record<string, IStage>} stages - Defines the stages for the wizard.
- * @property {string} entrypointComponent - The component to start the wizard.
- */
+ * MultiStagesWizard component props
+*/
 export interface IMultiStagesProviderProps {
+  /** Object with stages */
   stages: Record<string, IStage>
+  /** The component to start the wizard. */
   entrypointComponent: string
-  // returnRouteName: string
-  // responseErrorMessages: Array<string>
-  // v$?: Validation
 }
 
 export interface IStage {
@@ -33,4 +30,5 @@ export interface IStage {
   hasError?: boolean
 }
 
-export default MultiStagesProvider
+export { useWizard, BaseMultiStages }
+export default BaseMultiStages
