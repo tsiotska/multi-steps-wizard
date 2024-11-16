@@ -5,22 +5,22 @@ import type {Component} from "vue";
 /**
  * MultiStagesWizard component props
 */
-export interface IMultiStagesProviderProps {
+export interface IMultiStagesProviderProps<T extends object> {
   /** Object with stages */
-  stages: Record<string, IStage>
+  stages: Record<string, IStage<T>>
   /** The component to start the wizard. */
   entrypointComponent: string
 }
 
-export interface IStage {
+export interface IStage<T extends object> {
   stageOrderKey: number
   title: string
   payload: object
   component: Component
   nextStage: string | null
   prevStage: string | null
-  onNextPageClick?: (next: () => void, data?: object) => Promise<unknown> | void
-  onPrevPageClick?: (prev: () => void, data?: object) => Promise<unknown> | void
+  onNextPageClick?: (next: () => void, data: T & { [key: string]: unknown }) => Promise<unknown> | void
+  onPrevPageClick?: (prev: () => void, data: T & { [key: string]: unknown }) => Promise<unknown> | void
   isPrevButtonDisabled?: boolean
   isNextButtonDisabled?: boolean
   isInvisible?: boolean

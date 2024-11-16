@@ -124,7 +124,7 @@ export interface MultiStagesProviderEmits {
   (e: "cancelClick"): void
 }
 
-const props = defineProps<IMultiStagesProviderProps>()
+const props = defineProps<IMultiStagesProviderProps<Record<string, object>>>()
 const emit = defineEmits<MultiStagesProviderEmits>()
 
 const currentStageRef = useTemplateRef("currentStageRef")

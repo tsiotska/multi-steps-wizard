@@ -1,7 +1,7 @@
 import {ref, computed, ShallowRef} from 'vue';
 import {IStage} from "@multi-steps-wizard";
 
-export function useWizard(stages: Record<string, IStage>, entrypointComponent: string, currentStageRef: Readonly<ShallowRef>) {
+export function useWizard<T extends object>(stages: Record<string, IStage<T>>, entrypointComponent: string, currentStageRef: Readonly<ShallowRef>) {
   /* The anchor. */
   const currentStageName = ref<keyof typeof stages>(entrypointComponent)
 

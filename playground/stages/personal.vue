@@ -42,8 +42,14 @@
   </div>
 </template>
 
+<!-- export name for cache (<keep-alive />) -->
+<script lang="ts">
+export default {
+  name: "loanPersonal"
+}
+</script>
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import {ref} from "vue";
 import useVuelidate from "@vuelidate/core";
 import {minValue, required} from "@vuelidate/validators";
 
@@ -81,6 +87,6 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 const validate = v$.value.$validate
 
-defineExpose({contact: state, validate})
+defineExpose({personal: state, validate})
 </script>
 

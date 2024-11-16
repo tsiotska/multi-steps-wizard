@@ -15,10 +15,10 @@ import {Personal, Contact, Employment, Loan} from "./stages"
 import type {IUserLoanData} from "./app.ts";
 
 const STAGES = {
-  'LOAN_PERSONAL': 'LOAN_PERSONAL',
-  'LOAN_CONTACTS': 'LOAN_CONTACTS',
-  'LOAN_EMPLOYMENT': 'LOAN_EMPLOYMENT',
-  'LOAN_DETAILS': 'LOAN_DETAILS',
+  'LOAN_PERSONAL': 'loanPersonal',
+  'LOAN_CONTACTS': 'loanContacts',
+  'LOAN_EMPLOYMENT': 'loanEmployment',
+  'LOAN_DETAILS': 'loanDetails',
 } as const
 
 const entrypointComponent = STAGES.LOAN_PERSONAL
@@ -28,7 +28,7 @@ const userLoanData = reactive<IUserLoanData>({
     fullName: "",
     age: 0,
     dateOfBirth: "",
-    skipNextStage: false
+    skipNextStage: false,
   },
   contacts: {
     email: "",
@@ -47,7 +47,7 @@ const userLoanData = reactive<IUserLoanData>({
   }
 })
 
-const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = {
+const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Partial<typeof userLoanData>>> = reactive({
   [STAGES.LOAN_PERSONAL]: {
     stageOrderKey: 1,
     component: Personal,
@@ -55,11 +55,13 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = 
       ...userLoanData.personal
     },
     skip: userLoanData.personal.skipNextStage,
+    excludeNextStageFromCache: true,
     title: 'Personal Information',
     nextStage: STAGES.LOAN_CONTACTS,
     prevStage: null,
-    onNextPageClick: async (next: () => void, data?: object | undefined) => {
-      userLoanData.personal = data as typeof userLoanData.personal
+    onNextPageClick: async (next: () => void, {personal}) => {
+      userLoanData.personal = personal!
+      console.log(userLoanData.personal)
       next()
     }
   },
@@ -105,7 +107,7 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage> = 
       next()
     }
   }
-}
+})
 
 const saveClickHandler = (data: Partial<IUserLoanData>) => {
   const appPayload = Object.assign(userLoanData, data)

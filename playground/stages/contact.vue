@@ -34,8 +34,14 @@
   </div>
 </template>
 
+<!-- export name for cache (<keep-alive />) -->
+<script lang="ts">
+export default {
+  name: "loanContacts"
+}
+</script>
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import {ref} from "vue";
 import useVuelidate from "@vuelidate/core";
 import {email, required} from "@vuelidate/validators";
 
