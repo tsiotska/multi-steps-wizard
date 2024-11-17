@@ -1,65 +1,74 @@
-import {ref, computed, ShallowRef} from 'vue';
-import {IStage} from "@multi-steps-wizard";
+import {ref, computed, ComputedRef, ShallowRef, unref, watch} from 'vue'
+import { IStage } from '@multi-steps-wizard'
 
-export function useWizard<T extends object>(stages: Record<string, IStage<T>>, entrypointComponent: string, currentStageRef: Readonly<ShallowRef>) {
+export function useWizard<T extends object>(stages: ComputedRef<Record<string, IStage<T>>>, entrypointComponent: string, currentStageRef: Readonly<ShallowRef>) {
   /* The anchor. */
-  const currentStageName = ref<keyof typeof stages>(entrypointComponent)
+  const currentStageName = ref<keyof typeof stages.value>(entrypointComponent)
 
-  /* Current stage config. */
-  const currentStage = computed(() => stages[currentStageName.value]);
+  /* Current stage configuration. */
+  const currentStage = computed(() => stages.value[currentStageName.value])
 
-  /* It allows to display single head for the stages. */
+  /* Display heads for visible stages. */
   const visibleStagesHeads = computed(() =>
-    Object.values(stages).filter(({isInvisible}) => !isInvisible)
+    Object.values(stages.value).filter(({ isInvisible }) => !isInvisible)
+  )
+
+  /* Dynamically clear cache for next stage. */
+  const shouldClearNextComponentCache = computed(() =>
+    currentStage.value.excludeNextStageFromCache && currentStage.value.nextStage
+      ? [currentStage.value.nextStage]
+      : []
+  )
+
+  /* Dynamically enable/disable next button. */
+  const isNextButtonDisabled = computed(() => {
+    const currentRefValue = currentStageRef?.value
+    return currentRefValue
+      ? currentRefValue.isNextButtonDisabled ?? currentStage.value.isNextButtonDisabled
+      : true; // Disable when not available
+  })
+
+  /* Determine if previous button is disabled. */
+  const isPrevButtonDisabled = computed(() => currentStage.value.isPrevButtonDisabled)
+
+  /* Tooltip for the previous button when disabled. */
+  const prevButtonTooltip = computed(() =>
+    isPrevButtonDisabled.value ? currentStage.value.prevButtonTooltip : ''
+  )
+
+  /* Title for the next stage. */
+  const nextStageTitle = computed(() => {
+    const nextStageName = currentStage.value.nextStage
+    return nextStageName ? stages.value[nextStageName].title : undefined
+  })
+
+  /* Last stage key. */
+  const lastStageNumber = computed(() =>
+    Math.max(...Object.values(stages.value).map(({ stageOrderKey }) => stageOrderKey))
   );
 
-  // HACK: (keep-alive exclusion) Allows to dynamically clear cached data of stage if navigated back
-  const shouldClearNextComponentCache = computed(() =>
-    currentStage.value.excludeNextStageFromCache && currentStage.value.nextStage ? [currentStage.value.nextStage] : []
-  )
+  /* Check if the stage is the first in the chain. */
+  const isFirstChainItem = (stageKey: number) =>
+    Object.values(stages.value)[0].stageOrderKey === stageKey
 
-  const isNextButtonDisabled = computed(() => {
-    if (!currentStageRef?.value) return true // disable button when ref is not available yet
-    else return currentStageRef?.value?.isNextButtonDisabled ?? currentStage.value.isNextButtonDisabled
-  })
+  /* Check if the stage is the last in the chain. */
+  const isLastChainItem = (stageKey: number) => stageKey === lastStageNumber.value
 
-  const isPrevButtonDisabled = computed(() => {
-    return currentStage.value.isPrevButtonDisabled
-  })
+  /* Check if the stage is connected to the current one. */
+  const isStageConnected = (stageKey: number) =>
+    stageKey <= currentStage.value.stageOrderKey
 
-  const prevButtonTooltip = computed(() =>
-    (isPrevButtonDisabled.value ? currentStage.value.prevButtonTooltip : "")
-  )
+  /* Check if the stage is the current stage. */
+  const isCurrentStage = (stageKey: number) =>
+    stageKey === currentStage.value.stageOrderKey
 
-  const nextStageTitle = computed(() => {
-    if (currentStage.value.nextStage) return stages[currentStage.value.nextStage].title
-  })
+  /* Navigate to the previous page. */
+  const toPreviousPage = async ({ forceNavigation }: { forceNavigation?: boolean } = {}) => {
+    const { ...data } = currentStageRef.value || {}
+    const toPrev = () => {
+      currentStageName.value = currentStage.value.prevStage!
+    }
 
-  const lastStageNumber = computed(() =>
-    Math.max(...Object.values(stages).map(({stageOrderKey}) => stageOrderKey))
-  )
-
-  const isFirstChainItem = (stageKey: number) => {
-    return Object.values(stages)[0].stageOrderKey === stageKey
-  }
-
-  const isLastChainItem = (stageKey: number) => {
-    return stageKey === lastStageNumber.value
-  }
-
-  const isStageConnected = (stageKey: number) => {
-    return stageKey <= currentStage.value.stageOrderKey
-  }
-
-  const isCurrentStage = (stageKey: number) => {
-    return stageKey === currentStage.value.stageOrderKey
-  }
-
-  const toPreviousPage = async ({forceNavigation}: { forceNavigation?: boolean } = {}) => {
-    const {...data} = currentStageRef.value || {}
-    const toPrev = () => (currentStageName.value = currentStage.value.prevStage!);
-
-    // Handle forced navigation or when no handler is defined
     if (forceNavigation || !currentStage.value.onPrevPageClick) {
       toPrev()
       return
@@ -67,19 +76,21 @@ export function useWizard<T extends object>(stages: Record<string, IStage<T>>, e
 
     // Handle custom navigation logic with provided handler
     await currentStage.value.onPrevPageClick(toPrev, data)
-  }
+  };
 
-  const toNextPage = async ({forceNavigation}: { forceNavigation?: boolean } = {}) => {
-    const {validate, ...data} = currentStageRef.value || {}
-    const toNext = () => (currentStageName.value = currentStage.value.nextStage!)
+  /* Navigate to the next page. */
+  const toNextPage = async ({ forceNavigation }: { forceNavigation?: boolean } = {}) => {
+    const { validate, ...data } = currentStageRef.value || {}
+    const toNext = () => {
+      currentStageName.value = currentStage.value.nextStage!
+    }
 
-    // Handle forced navigation or when no handler is defined
     if (forceNavigation) {
       toNext()
       return
     }
 
-    // If validator is provided and data is valid
+    // If validator is provided and data is invalid
     if (validate && !(await validate())) return
 
     if (!currentStage.value.onNextPageClick) {
@@ -89,7 +100,16 @@ export function useWizard<T extends object>(stages: Record<string, IStage<T>>, e
 
     // Handle custom navigation logic with provided handler
     await currentStage.value.onNextPageClick(toNext, data)
-  }
+  };
+
+  watch(currentStage, (nextStage, prevStage) => {
+    const isForwardDirection = nextStage.stageOrderKey > prevStage.stageOrderKey
+
+    // Skip stage depending on navigation (next or back);
+    if (unref(currentStage.value.skip)) {
+      ;(isForwardDirection ? toNextPage : toPreviousPage)({forceNavigation: isForwardDirection})
+    }
+  })
 
   return {
     currentStageName,
@@ -106,5 +126,5 @@ export function useWizard<T extends object>(stages: Record<string, IStage<T>>, e
     isCurrentStage,
     toPreviousPage,
     toNextPage,
-  };
+  }
 }

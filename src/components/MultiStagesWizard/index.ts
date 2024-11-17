@@ -1,6 +1,6 @@
 import BaseMultiStages from "./BaseMultiStages.vue"
 import {useWizard} from "./useWizard"
-import type {Component} from "vue";
+import type {Component, MaybeRef} from "vue";
 
 /**
  * MultiStagesWizard component props
@@ -25,7 +25,7 @@ export interface IStage<T extends object> {
   isNextButtonDisabled?: boolean
   isInvisible?: boolean
   excludeNextStageFromCache?: boolean
-  skip?: boolean
+  skip?: MaybeRef<boolean>
   prevButtonTooltip?: string
   hasError?: boolean
 }

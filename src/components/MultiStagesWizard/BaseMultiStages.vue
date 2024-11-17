@@ -112,11 +112,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, watch, useTemplateRef} from "vue"
+import {watch, useTemplateRef, computed} from "vue"
 import IncludeSvgRadialGradient from "@/assets/svg/radial-gradient.svg"
 import Button from "@/components/Button"
 import Lucide from "@/components/Lucide"
-import {IMultiStagesProviderProps, IStage, useWizard} from "./";
+import {IMultiStagesProviderProps, useWizard} from "./";
 
 export interface MultiStagesProviderEmits {
   (e: "stageChange", stage: keyof typeof props.stages): void
@@ -128,6 +128,8 @@ const props = defineProps<IMultiStagesProviderProps<Record<string, object>>>()
 const emit = defineEmits<MultiStagesProviderEmits>()
 
 const currentStageRef = useTemplateRef("currentStageRef")
+
+const stages = computed(() => props.stages)
 
 const {
   currentStageName,
@@ -144,7 +146,7 @@ const {
   isCurrentStage,
   toPreviousPage,
   toNextPage,
-} = useWizard(props.stages, props.entrypointComponent, currentStageRef);
+} = useWizard(stages, props.entrypointComponent, currentStageRef);
 
 watch(currentStageName, () => {
   emit("stageChange", currentStageName.value)
@@ -154,13 +156,4 @@ const onSaveClick = async () => {
   const {...data} = currentStageRef.value || {}
   emit("saveClick", data)
 }
-
-watch(currentStage, (nextStage, prevStage) => {
-  const isForwardDirection = nextStage.stageOrderKey > prevStage.stageOrderKey
-
-  // Skip stage depending on navigation (next or back);
-  if (currentStage.value.skip) {
-    ;(isForwardDirection ? toNextPage : toPreviousPage)({forceNavigation: isForwardDirection})
-  }
-})
 </script>
