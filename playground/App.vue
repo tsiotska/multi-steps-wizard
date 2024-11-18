@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, shallowRef, ShallowRef} from "vue";
+import {computed, reactive} from "vue";
 import {BaseMultiStages, IStage} from '@multi-steps-wizard'
 import {Personal, Contact, Employment, Loan} from "./stages"
 import type {IUserLoanData} from "./app.ts";
