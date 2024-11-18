@@ -1,0 +1,25 @@
+.unwrap-enter-active {
+    animation: unwrapToRight .6s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
+}
+
+.unwrap-leave-active {
+    animation: wrapToLeft .6s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
+}
+
+@keyframes unwrapToRight {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes wrapToLeft {
+    from {
+        clip-path: inset(0 0 0 0);
+    }
+    to {
+        clip-path: inset(0 100% 0 0);
+    }
+}
