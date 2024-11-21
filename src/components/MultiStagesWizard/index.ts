@@ -29,27 +29,27 @@ export interface IStage<T extends object> {
   /** The key for the previous stage in the flow */
   prevStage: string | null;
   /**
-   * Optional function that runs when the "Next" button is clicked.
-   * It can be asynchronous and receives the next callback.
+   * Function that runs when the "Next" button is clicked.
+   * It can be asynchronous and receives stage data and the callback that navigate to the next stage.
    */
   onNextPageClick?: (next: () => void, data: T & { [key: string]: unknown }) => Promise<unknown> | void;
   /**
-   * Optional function that runs when the "Previous" button is clicked
+   * Function that runs when the "Previous" button is clicked
    */
   onPrevPageClick?: (prev: () => void, data: T & { [key: string]: unknown }) => Promise<unknown> | void;
-  /** Disables the "Previous" button if true */
+  /** Disables the "Previous" button if true. TODO: make reactive */
   isPrevButtonDisabled?: boolean;
-  /** Disables the "Next" button if true */
+  /** Disables the "Next" button if true. TODO: make reactive */
   isNextButtonDisabled?: boolean;
-  /** If true, the stage will not be rendered */
+  /** If true, the stage will not be rendered. TODO: make reactive */
   isInvisible?: boolean;
-  /** If true, the next stage is excluded from the cache */
+  /** If true, the next stage is excluded from the cache. TODO: make reactive */
   excludeNextStageFromCache?: boolean;
   /** Determines whether the stage should be skipped (e.g., based on previous data or logic) */
   skip?: MaybeRef<boolean>;
   /** Tooltip text for the "Previous" button */
   prevButtonTooltip?: string;
-  /** If true, this marks the stage with an error */
+  /** If true, this marks the stage with an error. TODO: make reactive, add combined client-server messages */
   hasError?: boolean;
 }
 
