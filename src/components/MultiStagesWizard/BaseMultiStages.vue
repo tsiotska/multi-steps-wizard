@@ -120,7 +120,7 @@ import {IMultiStagesProviderProps, useWizard} from "./";
 
 export interface MultiStagesProviderEmits {
   (e: "stageChange", stage: keyof typeof props.stages): void
-  (e: "saveClick", data: Partial<any>): void
+  (e: "saveClick", data: object): void
   (e: "cancelClick"): void
 }
 

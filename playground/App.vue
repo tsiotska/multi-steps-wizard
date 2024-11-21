@@ -113,10 +113,7 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Par
     }
 )
 
-const saveClickHandler = (data: Partial<IUserLoanData>) => {
-  const appPayload = Object.assign(userLoanData, data)
-  console.log("data");
-  console.log(data);
+const saveClickHandler = (stageData: Partial<IUserLoanData>) => {
   // API call.
 }
 
