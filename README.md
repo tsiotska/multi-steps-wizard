@@ -1,4 +1,6 @@
-<img src="https://raw.githubusercontent.com/tsiotska/wizardify/master/github/screenshots/wizard.png" alt="Wizardify">
+<p align="center">
+<img src="https://raw.githubusercontent.com/tsiotska/wizardify/master/github/screenshots/wizard.png" alt="Wizardify" width="900">
+</p>
 
 ## The `Wizardify` component is a flexible, multi-stage wizard system for Vue.js applications. 
 It allows you to manage a series of forms or steps in a workflow, providing navigation functionality between stages, 
@@ -94,27 +96,73 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Par
     :entrypoint-component="entrypointComponent"
   />
 </template>
+```
 
+### BaseMultiStages Component
+
+The `BaseMultiStages` component provides a ready-to-go foundation for using a multi-stage wizard. 
+Its template is fully detached from the logic, allowing you to use the `useWizard` composable to define your own template structure.
+
+#### Props
+
+```ts 
+interface IMultiStagesProviderProps<T extends object> {
+/** Object with stages */
+stages: Record<string, IStage<T>>
+/** The component to start the wizard. */
+entrypointComponent: string
+}
+
+interface MultiStagesProviderEmits {
+  (e: "stageChange", stage: keyof typeof props.stages): void
+  /** Triggered when the "Save" button is clicked. Use this to handle save logic.. */
+  (e: "saveClick", data: object): void
+  /** Triggered when the "Cancel" button is clicked. Use this to handle cancellation logic. */
+  (e: "cancelClick"): void
+}
 ```
 
 ### Stage properties:
 
-* `stageOrderKey`: The position of the stage in the wizard flow.
-* `title`: The title displayed for the stage.
-* `payload`: The data related to the stage.
-* `component`: The Vue component rendered for this stage.
-* `nextStage`: The key for the next stage in the flow.
-* `prevStage`: The key for the previous stage in the flow.
-* `onNextPageClick`: Optional function that runs when the "Next" button is clicked. It can be asynchronous and receives the next callback.
-* `onPrevPageClick`: Optional function that runs when the "Previous" button is clicked.
-* `isPrevButtonDisabled`: Disables the "Previous" button if true.
-* `isNextButtonDisabled`: Disables the "Next" button if true.
-* `isInvisible`: If true, the stage will not be rendered.
-* `excludeNextStageFromCache`: If true, the next stage is excluded from the cache.
-* `skip`: Determines whether the stage should be skipped (e.g., based on previous data or logic).
-* `prevButtonTooltip`: Tooltip text for the "Previous" button.
-* `hasError`: If true, this marks the stage with an error.
-
+```ts
+export interface IStage<T extends object> {
+  /** The position of the stage in the wizard flow */
+  stageOrderKey: number;
+  /** The title displayed for the stage */
+  title: string;
+  /** The data related to the stage */
+  payload: object;
+  /** The Vue component rendered for this stage */
+  component: Component;
+  /** The key for the next stage in the flow */
+  nextStage: string | null;
+  /** The key for the previous stage in the flow */
+  prevStage: string | null;
+  /**
+   * Optional function that runs when the "Next" button is clicked.
+   * It can be asynchronous and receives the next callback.
+   */
+  onNextPageClick?: (next: () => void, data: T & { [key: string]: unknown }) => Promise<unknown> | void;
+  /**
+   * Optional function that runs when the "Previous" button is clicked
+   */
+  onPrevPageClick?: (prev: () => void, data: T & { [key: string]: unknown }) => Promise<unknown> | void;
+  /** Disables the "Previous" button if true */
+  isPrevButtonDisabled?: boolean;
+  /** Disables the "Next" button if true */
+  isNextButtonDisabled?: boolean;
+  /** If true, the stage will not be rendered */
+  isInvisible?: boolean;
+  /** If true, the next stage is excluded from the cache */
+  excludeNextStageFromCache?: boolean;
+  /** Determines whether the stage should be skipped (e.g., based on previous data or logic) */
+  skip?: MaybeRef<boolean>;
+  /** Tooltip text for the "Previous" button */
+  prevButtonTooltip?: string;
+  /** If true, this marks the stage with an error */
+  hasError?: boolean;
+}
+```
 
 ### Stage component example
 
