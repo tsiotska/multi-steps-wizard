@@ -129,7 +129,7 @@ const emit = defineEmits<MultiStagesProviderEmits>()
 
 const currentStageRef = useTemplateRef("currentStageRef")
 
-const stages = computed(() => props.stages)
+const stages = computed(() => props.stages ?? {})
 
 const {
   currentStageName,

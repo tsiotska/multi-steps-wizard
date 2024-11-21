@@ -231,10 +231,29 @@ defineExpose({personal: state, validate})
 
 ## Reactive approach
 
+If you don't want to change properties imperatively, you can use a watcher to reactively update the stagesConfiguration whenever the underlying data changes.
 
+```js
+let stagesConfiguration: ShallowRef<Record<typeof STAGES[keyof typeof STAGES], IStage<Partial<typeof userLoanData>>> | {}> = shallowRef({})
+const updateStagesData = () => {
+  stagesConfiguration.value = {
+    [STAGES.LOAN_PERSONAL]: {
+      ...
+      onNextPageClick: async (next: () => void, {personal}) => {
+        userLoanData.personal = personal!
+        next()
+      }
+    },
+    [STAGES.LOAN_CONTACTS]: {
+      skip: userLoanData.personal.skipNextStage,
+      isInvisible: userLoanData.personal.skipNextStage,
+    },
+    ...
+    }
+  }
+}
 
-```vue
-
+watch(userLoanData, updateStagesData, {deep: true, immediate: true})
 ```
 
 ## Scripts
