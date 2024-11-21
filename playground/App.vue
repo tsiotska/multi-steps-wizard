@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive} from "vue";
+import {computed, markRaw, reactive, ShallowRef, shallowRef} from "vue";
 import {BaseMultiStages, IStage} from '@multi-steps-wizard'
 import {Personal, Contact, Employment, Loan} from "./stages"
 import type {IUserLoanData} from "./app.ts";
@@ -48,13 +48,11 @@ const userLoanData = reactive<IUserLoanData>({
   }
 })
 
-const shouldSkipContacts = computed(() => Boolean(userLoanData.personal.skipNextStage))
-
-const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Partial<typeof userLoanData>>> = (
+const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Partial<typeof userLoanData>>> = reactive(
     {
       [STAGES.LOAN_PERSONAL]: {
         stageOrderKey: 1,
-        component: Personal,
+        component: shallowRef(Personal),
         payload: {
           ...userLoanData.personal
         },
@@ -64,17 +62,20 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Par
         prevStage: null,
         onNextPageClick: async (next: () => void, {personal}) => {
           userLoanData.personal = personal!
+          stagesConfiguration[STAGES.LOAN_CONTACTS].isInvisible = Boolean(personal?.skipNextStage)
+          stagesConfiguration[STAGES.LOAN_CONTACTS].skip = Boolean(personal?.skipNextStage)
           next()
         }
       },
       [STAGES.LOAN_CONTACTS]: {
         stageOrderKey: 2,
         title: 'Contact Details',
-        component: Contact,
+        component: shallowRef(Contact),
         payload: {
           ...userLoanData.contacts
         },
-        skip: shouldSkipContacts,
+        isInvisible: false,
+        skip: false,
         nextStage: STAGES.LOAN_EMPLOYMENT,
         prevStage: STAGES.LOAN_PERSONAL,
         onNextPageClick: (next: () => void, {contacts}) => {
@@ -85,7 +86,7 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Par
       [STAGES.LOAN_EMPLOYMENT]: {
         stageOrderKey: 3,
         title: 'Employment Information',
-        component: Employment,
+        component: shallowRef(Employment),
         payload: {
           ...userLoanData.employment
         },
@@ -99,7 +100,7 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Par
       [STAGES.LOAN_DETAILS]: {
         stageOrderKey: 4,
         title: 'Loan Details',
-        component: Loan,
+        component: shallowRef(Loan),
         payload: {
           ...userLoanData.loanDetails
         },

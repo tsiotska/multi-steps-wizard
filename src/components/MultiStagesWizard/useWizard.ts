@@ -106,8 +106,8 @@ export function useWizard<T extends object>(stages: ComputedRef<Record<string, I
     const isForwardDirection = nextStage.stageOrderKey > prevStage.stageOrderKey
 
     // Skip stage depending on navigation (next or back);
-    if (unref(currentStage.value.skip)) {
-      const animationDelayDuration = currentStage.value.isInvisible ? 0 : 150
+    if (currentStage.value.skip) {
+      const animationDelayDuration = currentStage.value.isInvisible ? 0 : 180
 
       setTimeout(() => {
         ;(isForwardDirection ? toNextPage : toPreviousPage)({forceNavigation: isForwardDirection})

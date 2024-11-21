@@ -13,8 +13,8 @@ and you can control navigation, validation, and data passing between stages.
 
 ```vue
 <script setup lang="ts">
-import { computed, reactive } from "vue";
-import { BaseMultiStages, IStage } from '@multi-steps-wizard';
+import { reactive } from "vue";
+import { IStage } from '@multi-steps-wizard';
 import { Personal, Contact, Employment, Loan } from "./stages";
 import type { IUserLoanData } from "./app.ts";
 
@@ -34,60 +34,71 @@ const userLoanData = reactive<IUserLoanData>({
   loanDetails: { loanAmount: "", loanPurpose: "", loanTerm: "" }
 });
 
-const shouldSkipContacts = computed(() => Boolean(userLoanData.personal.skipNextStage));
-
-const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Partial<typeof userLoanData>>> = {
-  [STAGES.LOAN_PERSONAL]: {
-    stageOrderKey: 1,
-    component: Personal,
-    payload: { ...userLoanData.personal },
-    excludeNextStageFromCache: true,
-    title: 'Personal Information',
-    nextStage: STAGES.LOAN_CONTACTS,
-    prevStage: null,
-    onNextPageClick: async (next, { personal }) => {
-      userLoanData.personal = personal!;
-      next();
+const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Partial<typeof userLoanData>>> = reactive(
+  {
+      [STAGES.LOAN_PERSONAL]: {
+        stageOrderKey: 1,
+        component: shallowRef(Personal),
+        payload: {
+          ...userLoanData.personal
+        },
+        excludeNextStageFromCache: true,
+        title: 'Personal Information',
+        nextStage: STAGES.LOAN_CONTACTS,
+        prevStage: null,
+        onNextPageClick: async (next: () => void, {personal}) => {
+          userLoanData.personal = personal!
+          stagesConfiguration[STAGES.LOAN_CONTACTS].isInvisible = Boolean(personal?.skipNextStage)
+          stagesConfiguration[STAGES.LOAN_CONTACTS].skip = Boolean(personal?.skipNextStage)
+          next()
+        }
+      },
+      [STAGES.LOAN_CONTACTS]: {
+        stageOrderKey: 2,
+        title: 'Contact Details',
+        component: shallowRef(Contact),
+        payload: {
+          ...userLoanData.contacts
+        },
+        isInvisible: false,
+        skip: false,
+        nextStage: STAGES.LOAN_EMPLOYMENT,
+        prevStage: STAGES.LOAN_PERSONAL,
+        onNextPageClick: (next: () => void, {contacts}) => {
+          userLoanData.contacts = contacts!
+          next()
+        }
+      },
+      [STAGES.LOAN_EMPLOYMENT]: {
+        stageOrderKey: 3,
+        title: 'Employment Information',
+        component: shallowRef(Employment),
+        payload: {
+          ...userLoanData.employment
+        },
+        nextStage: STAGES.LOAN_DETAILS,
+        prevStage: STAGES.LOAN_CONTACTS,
+        onNextPageClick: (next: () => void, {employment}) => {
+          userLoanData.employment = employment!
+          next()
+        }
+      },
+      [STAGES.LOAN_DETAILS]: {
+        stageOrderKey: 4,
+        title: 'Loan Details',
+        component: shallowRef(Loan),
+        payload: {
+          ...userLoanData.loanDetails
+        },
+        nextStage: null,
+        prevStage: STAGES.LOAN_EMPLOYMENT,
+        onNextPageClick: (next: () => void, {loanDetails}) => {
+          userLoanData.loanDetails = loanDetails!
+          next()
+        }
+      }
     }
-  },
-  [STAGES.LOAN_CONTACTS]: {
-    stageOrderKey: 2,
-    title: 'Contact Details',
-    component: Contact,
-    payload: { ...userLoanData.contacts },
-    skip: shouldSkipContacts,
-    nextStage: STAGES.LOAN_EMPLOYMENT,
-    prevStage: STAGES.LOAN_PERSONAL,
-    onNextPageClick: (next, { contacts }) => {
-      userLoanData.contacts = contacts!;
-      next();
-    }
-  },
-  [STAGES.LOAN_EMPLOYMENT]: {
-    stageOrderKey: 3,
-    title: 'Employment Information',
-    component: Employment,
-    payload: { ...userLoanData.employment },
-    nextStage: STAGES.LOAN_DETAILS,
-    prevStage: STAGES.LOAN_CONTACTS,
-    onNextPageClick: (next, { employment }) => {
-      userLoanData.employment = employment!;
-      next();
-    }
-  },
-  [STAGES.LOAN_DETAILS]: {
-    stageOrderKey: 4,
-    title: 'Loan Details',
-    component: Loan,
-    payload: { ...userLoanData.loanDetails },
-    nextStage: null,
-    prevStage: STAGES.LOAN_EMPLOYMENT,
-    onNextPageClick: (next, { loanDetails }) => {
-      userLoanData.loanDetails = loanDetails!;
-      next();
-    }
-  }
-};
+)
 </script>
 
 <template>
@@ -156,7 +167,7 @@ export interface IStage<T extends object> {
   /** If true, the next stage is excluded from the cache. */
   excludeNextStageFromCache?: boolean;
   /** Determines whether the stage should be skipped (e.g., based on previous data or logic) */
-  skip?: MaybeRef<boolean>;
+  skip?: boolean;
   /** Tooltip text for the "Previous" button */
   prevButtonTooltip?: string;
   /** If true, this marks the stage with an error. */
@@ -216,6 +227,14 @@ const validate = v$.value.$validate
 
 defineExpose({personal: state, validate})
 </script>
+```
+
+## Reactive approach
+
+
+
+```vue
+
 ```
 
 ## Scripts
