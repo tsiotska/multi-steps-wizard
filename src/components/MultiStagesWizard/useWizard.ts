@@ -76,7 +76,7 @@ export function useWizard<T extends object>(stages: ComputedRef<Record<string, I
 
     // Handle custom navigation logic with provided handler
     await currentStage.value.onPrevPageClick(toPrev, data)
-  };
+  }
 
   /* Navigate to the next page. */
   const toNextPage = async ({ forceNavigation }: { forceNavigation?: boolean } = {}) => {
@@ -107,7 +107,11 @@ export function useWizard<T extends object>(stages: ComputedRef<Record<string, I
 
     // Skip stage depending on navigation (next or back);
     if (unref(currentStage.value.skip)) {
-      ;(isForwardDirection ? toNextPage : toPreviousPage)({forceNavigation: isForwardDirection})
+      const animationDelayDuration = currentStage.value.isInvisible ? 0 : 150
+
+      setTimeout(() => {
+        ;(isForwardDirection ? toNextPage : toPreviousPage)({forceNavigation: isForwardDirection})
+      }, animationDelayDuration)
     }
   })
 
