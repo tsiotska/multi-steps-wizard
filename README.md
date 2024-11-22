@@ -48,6 +48,8 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Par
         prevStage: null,
         onNextPageClick: async (next: () => void, {personal}) => {
           userLoanData.personal = personal!
+          // Maybe API call (personal)
+          // Maybe failed errorMessages.value.push("Failed server validation for field...")
           stagesConfiguration[STAGES.LOAN_CONTACTS].isInvisible = Boolean(personal?.skipNextStage)
           stagesConfiguration[STAGES.LOAN_CONTACTS].skip = Boolean(personal?.skipNextStage)
           next()
@@ -122,6 +124,8 @@ interface IMultiStagesProviderProps<T extends object> {
 stages: Record<string, IStage<T>>
 /** The component to start the wizard. */
 entrypointComponent: string
+/** Server side validation error messages */
+errorMessages?: Array<string>
 }
 
 interface MultiStagesProviderEmits {
@@ -287,8 +291,8 @@ type Variant =
   | "soft-warning"
   | "soft-pending"
   | "soft-danger"
-  | "soft-dark"```
-
+  | "soft-dark"
+ ```
 
 ## Scripts
 
