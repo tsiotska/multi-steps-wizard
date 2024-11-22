@@ -11,7 +11,7 @@
             :title="prevButtonTooltip"
             :disabled="isPrevButtonDisabled"
         >
-           <Lucide icon="ArrowLeft" class="w-5 h-5 mr-2"/>
+          <Lucide icon="ArrowLeft" class="w-5 h-5 mr-2"/>
           Back
         </Button>
         <div class="hidden md:flex w-full max-w-4xl mr-8">
@@ -26,7 +26,7 @@
             :disabled="isNextButtonDisabled"
         >
           {{ nextStageTitle }}
-           <Lucide icon="ArrowRight" class="w-5 h-5 ml-2"/>
+          <Lucide icon="ArrowRight" class="w-5 h-5 ml-2"/>
         </Button>
       </div>
       <div class="md:hidden mt-5">
@@ -62,7 +62,7 @@
                 { 'text-success': isStageConnected(stageOrderKey) && !isCurrentStage(stageOrderKey) && !hasError }
               ]"
             >
-                <IncludeSvgRadialGradient v-if="hasError" />
+              <IncludeSvgRadialGradient v-if="hasError"/>
             </Lucide>
             <p
                 class="hidden md:block text-color-primary absolute mt-10 capitalize"
@@ -78,19 +78,21 @@
     <!-- END: STEPS HEADS -->
 
     <!-- BEGIN: MESSAGE -->
-    <!--    <Alert v-if="errorMessagesCombined.length" variant="soft-danger" class="mb-5">
-          <div class="flex flex-col">
-            <div class="flex items-center">
-              <Lucide icon="AlertOctagon" class="w-6 h-6 mr-4 self-start" />
-              <div class="flex flex-col">
-                <span>To complete the process the following errors need to be corrected:</span>
-                <ul class="list-disc list-inside mt-2">
-                  <li v-for="(error, index) in errorMessagesCombined" :key="index">{{ error }}</li>
-                </ul>
-              </div>
+    <slot name="alert">
+      <Alert v-if="props.errorMessages?.length" variant="soft-danger" class="mb-5">
+        <div class="flex flex-col">
+          <div class="flex items-center">
+            <Lucide icon="AlertOctagon" class="w-6 h-6 mr-4 self-start"/>
+            <div class="flex flex-col">
+              <span>To complete the process the following errors need to be corrected:</span>
+              <ul class="list-disc list-inside mt-2">
+                <li v-for="(error, index) in props.errorMessages" :key="index">{{ error }}</li>
+              </ul>
             </div>
           </div>
-        </Alert>-->
+        </div>
+      </Alert>
+    </slot>
     <!-- END: MESSAGE -->
 
     <!-- BEGIN: COMPONENT -->
@@ -117,6 +119,7 @@ import IncludeSvgRadialGradient from "@/assets/svg/radial-gradient.svg"
 import Button from "@/components/Button"
 import Lucide from "@/components/Lucide"
 import {IMultiStagesProviderProps, useWizard} from "./";
+import Alert from "@/components/Alert";
 
 export interface MultiStagesProviderEmits {
   (e: "stageChange", stage: keyof typeof props.stages): void
@@ -156,4 +159,5 @@ const onSaveClick = async () => {
   const {...data} = currentStageRef.value || {}
   emit("saveClick", data)
 }
+
 </script>

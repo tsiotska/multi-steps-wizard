@@ -7,6 +7,7 @@
           class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           :class="{'border-red-600': v$.fullName?.$error}"
       />
+      <div v-if="v$.fullName.$error" class="text-sm text-danger">{{ v$.fullName.$errors[0].$message }}</div>
     </div>
 
     <div class="mb-4">
@@ -16,6 +17,7 @@
           class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           :class="{'border-red-600': v$.age?.$error}"
       />
+      <div v-if="v$.age.$error" class="text-sm text-danger">{{ v$.age.$errors[0].$message }}</div>
     </div>
 
     <div class="mb-4">
@@ -27,6 +29,7 @@
           class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           :class="{'border-red-600': v$.dateOfBirth?.$error}"
       />
+      <div v-if="v$.dateOfBirth.$error" class="text-sm text-danger">{{ v$.dateOfBirth.$errors[0].$message }}</div>
     </div>
 
     <div class="mb-4 flex items-center">

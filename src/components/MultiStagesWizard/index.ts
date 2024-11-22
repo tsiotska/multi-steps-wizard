@@ -10,6 +10,8 @@ export interface IMultiStagesProviderProps<T extends object> {
   stages: Record<string, IStage<T>>
   /** The component to start the wizard. */
   entrypointComponent: string
+  /** Server side validation error messages */
+  errorMessages?: Array<string>
 }
 
 /**

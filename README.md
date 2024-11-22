@@ -256,6 +256,40 @@ const updateStagesData = () => {
 watch(userLoanData, updateStagesData, {deep: true, immediate: true})
 ```
 
+## Wizard customization
+If you decided to go with BaseMultiSteps component,
+
+#### Custom Alert Slot
+Alert is used to display errors and provide messages.
+The component provides a named slot alert that allows users to customize the entire alert display.
+If no custom slot is provided, the component will fall back to a default alert implementation.
+
+#### Buttons and alert variants
+```ts
+type Variant =
+  | "primary"
+  | "secondary"
+  | "success"
+  | "warning"
+  | "pending"
+  | "danger"
+  | "dark"
+  | "outline-primary"
+  | "outline-secondary"
+  | "outline-success"
+  | "outline-warning"
+  | "outline-pending"
+  | "outline-danger"
+  | "outline-dark"
+  | "soft-primary"
+  | "soft-secondary"
+  | "soft-success"
+  | "soft-warning"
+  | "soft-pending"
+  | "soft-danger"
+  | "soft-dark"```
+
+
 ## Scripts
 
 ### Development

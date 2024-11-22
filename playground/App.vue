@@ -3,6 +3,7 @@
       class="mt-6 px-10 intro-y "
       :stages="stagesConfiguration"
       :entrypointComponent="entrypointComponent"
+      :errorMessages="errorMessages"
       @saveClick="saveClickHandler"
       @cancelClick="cancelClickHandler"
   >
@@ -10,10 +11,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, markRaw, reactive, Ref, ShallowRef, shallowRef, watch} from "vue";
+import {reactive, Ref, ref, shallowRef} from "vue";
 import {BaseMultiStages, IStage} from '@multi-steps-wizard'
 import {Personal, Contact, Employment, Loan} from "./stages"
 import type {IUserLoanData} from "./app.ts";
+
+const errorMessages: Ref<Array<string>> = ref([])
 
 const STAGES = {
   'LOAN_PERSONAL': 'loanPersonal',
@@ -64,7 +67,9 @@ const stagesConfiguration: Record<typeof STAGES[keyof typeof STAGES], IStage<Par
           userLoanData.personal = personal!
           stagesConfiguration[STAGES.LOAN_CONTACTS].isInvisible = Boolean(personal?.skipNextStage)
           stagesConfiguration[STAGES.LOAN_CONTACTS].skip = Boolean(personal?.skipNextStage)
-          next()
+          // API call.
+          errorMessages.value.push("Failed server validation for field...")
+          // next()
         }
       },
       [STAGES.LOAN_CONTACTS]: {

@@ -41,7 +41,6 @@ export default {
   plugins: [
     plugin(function ({addBase}) {
       addBase({
-        // Default colors
         ":root": {
           "--color-primary": toRGB(colors.cyan["900"]),
           "--color-secondary": toRGB(colors.slate["200"]),
@@ -54,7 +53,6 @@ export default {
           "--color-dark": toRGB(colors.slate["800"]),
           "--color-card": "255 255 255"
         },
-        // Default dark-mode colors
         ".dark": {
           "--color-primary": toRGB(colors.cyan["800"]),
           "--color-darkmode-50": "87 103 132",
